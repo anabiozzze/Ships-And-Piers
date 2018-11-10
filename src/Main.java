@@ -1,16 +1,15 @@
+import Port.Customs;
 import sea.Constructor;
-import sea.Ship;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
 
-    public List<Ship> ships = new ArrayList();
+    public static Constructor constructor = new Constructor();
+    public static Customs customs = new Customs();
 
     public static void main(String[] args) {
-        Constructor constructor = new Constructor();
-        constructor.setNeed(true);
+
+        constructor.start();
+        customs.start();
 
 
     }

@@ -5,12 +5,20 @@ import java.util.List;
 
 public class Constructor extends Thread {
     // должен выдавать рандомно корабли 3х разных типов с 3мя разными категориями веса
-    public List<Ship> ships = new ArrayList<>();
+
+    public static volatile List<Ship> ships = new ArrayList<>();
     public boolean isNeed;
 
     public Constructor() {
     }
 
+    @Override
+    public void run() {
+        setNeed(true);
+        startFactory();
+    }
+
+    // здесь создаем корабли разных типов
     private Ship createShip() {
 
         if (Math.random()<0.33)
@@ -21,6 +29,7 @@ public class Constructor extends Thread {
 
     }
 
+    // здесь задаем кораблям случайцный вес
     private int randomWeight() {
 
         if (Math.random()<0.33)
@@ -31,12 +40,21 @@ public class Constructor extends Thread {
 
     }
 
+
     public Ship startFactory() {
+        Ship result = null;
+
         while (isNeed) {
-            ships.add(createShip());
-                return ships.get(ships.size()-1);
+            result = createShip();
+            ships.add(result);
+            System.out.println(ships.get(ships.size()-1).toString() + " is coming from sea...");
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        return null;
+        return result;
     }
 
     public boolean isNeed() {
