@@ -1,13 +1,17 @@
 package sea;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Constructor extends Thread {
     // должен выдавать рандомно корабли 3х разных типов с 3мя разными категориями веса
 
-    public static volatile List<Ship> ships = new ArrayList<>();
-    public boolean isNeed;
+    // используем синхронизированную коллекцию во избежение одновременного доступа от разных потоков
+    public static volatile List<Ship> ships = Collections.synchronizedList( new ArrayList<>());
+
+    // флаг для остановки производства судов
+    private static boolean isNeed;
 
     public Constructor() {
     }
@@ -41,27 +45,28 @@ public class Constructor extends Thread {
     }
 
 
-    public Ship startFactory() {
+    // фабрика по производству судов случайного типа и веса - одно судно в секунду
+    private synchronized Ship startFactory() {
         Ship result = null;
 
         while (isNeed) {
             result = createShip();
             ships.add(result);
-            System.out.println(ships.get(ships.size()-1).toString() + " is coming from sea...");
+//            System.out.println(ships.get(ships.size()-1).toString() + " is coming from sea...");
             try {
-                Thread.sleep(2000);
+                Constructor.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
         return result;
     }
 
-    public boolean isNeed() {
+    public static boolean isNeed() {
         return isNeed;
     }
 
-    public void setNeed(boolean need) {
+    public static void setNeed(boolean need) {
         isNeed = need;
     }
 }
